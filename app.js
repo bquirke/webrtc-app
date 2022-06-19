@@ -5,6 +5,8 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = http.createServer(app);
+const io = require('socket.io')(server);
+
 
 //making file accessible outside of server
 app.use(express.static("public"));
@@ -15,13 +17,27 @@ app.get('/', (req, res) =>{
 });
 
 
-app.get('/hello', (req, res) => {
-    res.send("Hello");
+// list of clients connected
+let connectedPeers = [];
+
+io.on('connection', (socket) => {
+    console.log(connectedPeers);
+
+    connectedPeers.push(socket.id);
+
+
+    socket.on("disconnect", ()=>{
+        console.log("user disconnected");
+
+        const newConnectedPers = connectedPeers.filter((peerSocketId)=>{
+            return peerSocketId != socket.id
+        });
+
+        connectedPeers = newConnectedPers;
+        console.log(connectedPeers);
+    });
 });
 
-app.get('/hellow', (req, res) => {
-    res.send("Hellow");
-});
 
 // Startup
 server.listen(PORT, () =>{
