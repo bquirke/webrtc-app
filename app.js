@@ -21,10 +21,8 @@ app.get('/', (req, res) =>{
 let connectedPeers = [];
 
 io.on('connection', (socket) => {
-    console.log(connectedPeers);
-
     connectedPeers.push(socket.id);
-
+    console.log(connectedPeers);
 
     socket.on("disconnect", ()=>{
         console.log("user disconnected");
